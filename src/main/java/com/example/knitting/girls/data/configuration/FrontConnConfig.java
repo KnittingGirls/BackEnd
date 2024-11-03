@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 @Configuration
-public class FrontConnConfiguration {
+public class FrontConnConfig {
 
     @Bean
     public MultipartResolver multipartResolver() {

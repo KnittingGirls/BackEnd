@@ -1,7 +1,7 @@
 package com.example.knitting.girls.data.controller;
 
 import com.example.knitting.girls.data.dto.ImageUploadReqDto;
-import com.example.knitting.girls.data.service.ImageUploadService;
+import com.example.knitting.girls.data.service.ImageUploadServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageUploadController {
 
     @Autowired
-    private ImageUploadService imageUploadService;
+    private ImageUploadServiceImpl imageUploadServiceImpl;
 
     @GetMapping("/upload")
     public String showUploadForm() {
@@ -25,7 +25,7 @@ public class ImageUploadController {
     @PostMapping("/upload")
     public String uploadImage(@RequestParam("image") MultipartFile image, Model model) {
         ImageUploadReqDto requestDto = new ImageUploadReqDto(image);
-        String responseMessage = imageUploadService.uploadImage(requestDto);
+        String responseMessage = imageUploadServiceImpl.uploadImage(requestDto);
         model.addAttribute("message", responseMessage);
         return "upload";
     }
