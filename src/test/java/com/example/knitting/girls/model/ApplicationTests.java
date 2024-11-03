@@ -1,4 +1,4 @@
-package com.example.knitting.girls.data;
+package com.example.knitting.girls.model;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
