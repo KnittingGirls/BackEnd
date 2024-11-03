@@ -1,4 +1,4 @@
-package com.example.knitting.girls.dto;
+package com.example.knitting.girls.data.dto;
 
 import lombok.Getter;
 import lombok.Setter;

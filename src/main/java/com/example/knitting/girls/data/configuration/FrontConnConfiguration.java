@@ -1,4 +1,4 @@
-package com.example.knitting.girls.configuration;
+package com.example.knitting.girls.data.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

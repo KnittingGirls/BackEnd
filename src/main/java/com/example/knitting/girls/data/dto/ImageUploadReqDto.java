@@ -1,16 +1,14 @@
-package com.example.knitting.girls.dto;
+package com.example.knitting.girls.data.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
 public class ImageUploadReqDto {
     private MultipartFile image;
 
-    // 생성자
     public ImageUploadReqDto(MultipartFile image) {
         this.image = image;
     }
 
-    // Getter와 Setter
     public MultipartFile getImage() {
         return image;
     }
