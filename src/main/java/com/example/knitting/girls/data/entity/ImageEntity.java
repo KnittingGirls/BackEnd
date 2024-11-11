@@ -1,50 +1,23 @@
 package com.example.knitting.girls.data.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "images")
+@Getter  // 모든 필드에 대한 getter 메서드 자동 생성
+@Setter  // 모든 필드에 대한 setter 메서드 자동 생성
 public class ImageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "image_name", nullable = false)
+    @Column(name = "image_name")
     private String imageName;
 
     @Lob
-    @Column(name = "image_data", nullable = false)
+    @Column(name = "image_data")
     private byte[] imageData;
-
-    public ImageEntity() {}
-
-    public ImageEntity(String imageName, byte[] imageData) {
-        this.imageName = imageName;
-        this.imageData = imageData;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
-    public byte[] getImageData() {
-        return imageData;
-    }
-
-    public void setImageData(byte[] imageData) {
-        this.imageData = imageData;
-    }
 }

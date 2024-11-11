@@ -1,4 +1,4 @@
-package com.example.knitting.girls.data.dto;
+/*package com.example.knitting.girls.data.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,3 +14,4 @@ public class ImageUploadResDto {
         this.imageUrl = imageUrl;
     }
 }
+*/

@@ -6,10 +6,11 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 @Configuration
-public class FrontConnConfig {
+public class MultipartConfig {
 
     @Bean
     public MultipartResolver multipartResolver() {
         return new StandardServletMultipartResolver();
     }
 }
+ // 이미지 업로드 시 필요
