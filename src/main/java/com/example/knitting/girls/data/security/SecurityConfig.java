@@ -22,7 +22,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+                .csrf(csrf -> csrf.disable())
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/login/**", "/callback").permitAll()  // 로그인 페이지와 콜백 URL은 인증 없이 접근 가능

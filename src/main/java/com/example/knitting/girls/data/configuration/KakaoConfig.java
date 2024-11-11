@@ -1,11 +1,12 @@
 package com.example.knitting.girls.data.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(prefix = "kakao")
 public class KakaoConfig {
 
-    private String clientId;  // 카카오 클라이언트 ID를 저장하는 필드
+    private String clientId;
     private String apiKey;
     private String redirectUri;
 
@@ -16,7 +17,6 @@ public class KakaoConfig {
         this.redirectUri = redirectUri;
     }
 
-    // clientId를 반환하는 getter 메서드 추가
     public String getClientId() {
         return clientId;
     }
@@ -27,5 +27,11 @@ public class KakaoConfig {
 
     public String getRedirectUri() {
         return redirectUri;
+    }
+
+    public void logProperties() {
+        System.out.println("ClientId: " + clientId);
+        System.out.println("ApiKey: " + apiKey);
+        System.out.println("RedirectUri: " + redirectUri);
     }
 }

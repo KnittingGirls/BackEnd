@@ -1,6 +1,6 @@
 package com.example.knitting.girls.data.controller;
 
-import com.example.knitting.girls.data.configuration.KakaoConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,20 +9,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 @Controller
-@RequestMapping("/login")
-public class KakaoLoginPageController {
+@RequestMapping("/login")public class KakaoLoginPageController {
 
-    private final KakaoConfig kakaoConfig;
+    @Value("${kakao.client_id}")
+    private String client_id;
 
-    public KakaoLoginPageController(KakaoConfig kakaoConfig) {
-        this.kakaoConfig = kakaoConfig;
-    }
+    @Value("${kakao.redirect_uri}")
+    private String redirect_uri;
 
     @GetMapping("/page")
-    public String loginPage(Model model) throws UnsupportedEncodingException {
-        String redirectUri = URLEncoder.encode(kakaoConfig.getRedirectUri(), "UTF-8");
-        String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="
-                + kakaoConfig.getClientId() + "&redirect_uri=" + redirectUri;
+    public String loginPage(Model model) {
+        String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="+client_id+"&redirect_uri="+redirect_uri;
         model.addAttribute("location", location);
 
         return "login";
