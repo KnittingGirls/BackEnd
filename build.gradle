@@ -24,24 +24,43 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-mustache'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	implementation 'mysql:mysql-connector-java'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-
-	implementation 'commons-fileupload:commons-fileupload:1.4' // 추가
-	implementation 'commons-io:commons-io:2.11.0' // 추가
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-mustache'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// JPA & DB
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA (데이터베이스 연동)
+	implementation 'mysql:mysql-connector-java' // MySQL 데이터베이스 드라이버
+	runtimeOnly 'com.mysql:mysql-connector-j' // MySQL 커넥터 (런타임 의존성)
+
+	// 카카오 로그인
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth2 클라이언트 (카카오 로그인 등 외부 인증)
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+	implementation 'org.springframework.security:spring-security-ldap:5.5.0'
+
+	// 파일 업로드
+	implementation 'commons-fileupload:commons-fileupload:1.4' // 파일 업로드 기능 제공
+	implementation 'commons-io:commons-io:2.11.0' // 파일 및 IO 처리 유틸리티
+
+	// 개발 툴
+	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 중 자동 리스타트 및 리로드 지원
+	compileOnly 'org.projectlombok:lombok' // Lombok (어노테이션을 통한 코드 간결화)
+	annotationProcessor 'org.projectlombok:lombok' // Lombok 어노테이션 처리기
+
+	// validation 의존성 추가
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.hibernate.validator:hibernate-validator:7.0.2.Final'
+
+	// test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot 기본 테스트 도구
+	testImplementation 'org.springframework.security:spring-security-test' // Spring Security 테스트 도구
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit 플랫폼 런처 (테스트 실행)
 
 }
 
