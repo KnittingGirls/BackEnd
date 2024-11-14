@@ -6,9 +6,9 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "images")
-@Getter  // 모든 필드에 대한 getter 메서드 자동 생성
-@Setter  // 모든 필드에 대한 setter 메서드 자동 생성
-public class ImageEntity {
+@Getter
+@Setter
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
