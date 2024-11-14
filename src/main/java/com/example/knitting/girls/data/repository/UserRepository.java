@@ -1,8 +1,12 @@
 package com.example.knitting.girls.data.repository;
 
-import com.example.knitting.girls.data.entity.UserEntity;
+
+
+import com.example.knitting.girls.data.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
-    UserEntity findByKakaoId(Long kakaoId);
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    User findByNickname(String nickname);
 }

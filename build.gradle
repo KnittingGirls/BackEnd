@@ -37,11 +37,17 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j' // MySQL 커넥터 (런타임 의존성)
 
 	// 카카오 로그인
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth2 클라이언트 (카카오 로그인 등 외부 인증)
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:3.1.0' // OAuth2 클라이언트 (카카오 로그인 등 외부 인증)
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
-	implementation 'org.springframework.security:spring-security'
+
+	// Spring Security 6.x 버전
+	implementation 'org.springframework.security:spring-security-core:6.1.0'
+	implementation 'org.springframework.security:spring-security-web:6.1.0'
+	implementation 'org.springframework.security:spring-security-config:6.1.0'
+	implementation 'org.json:json:20210307'
+
 
 	// 파일 업로드
 	implementation 'commons-fileupload:commons-fileupload:1.4' // 파일 업로드 기능 제공
