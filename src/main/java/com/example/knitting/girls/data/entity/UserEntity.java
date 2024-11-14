@@ -11,7 +11,7 @@ import jakarta.persistence.GenerationType;
 @Entity
 @Getter
 @Setter
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // DB에서 자동으로 생성되는 ID (식별자)
