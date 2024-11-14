@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+</head>
+<body>
+<h1>로그인 성공!</h1>
+<!-- 사용자 정보 출력 -->
+<p th:text="'사용자 정보: ' + ${userInfo}"></p>
+
+<!-- 사용자 이름과 프로필 이미지 출력 -->
+<div>
+    <p>닉네임: <span th:text="${userInfo.nickname}"></span></p>
+    <img th:src="${userInfo.profileImageUrl}" alt="Profile Image" style="border-radius: 50%; width: 100px; height: 100px;">
+</div>
+</body>
+</html>
