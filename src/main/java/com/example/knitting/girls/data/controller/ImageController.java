@@ -14,13 +14,13 @@ import org.springframework.http.HttpHeaders;
 public class ImageController { // "클라이언트 요청을 받아서 처리"
 
     @Autowired
-    private ImageService imageService;  // ImageService를 주입받아서 사용
+    private ImageService imageService;
 
     // 이미지 업로드 엔드포인트
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@ModelAttribute ImageDto imageDto) {
-        String result = imageService.uploadImage(imageDto);  // ImageService의 업로드 메서드 호출
-        return ResponseEntity.ok(result);  // 결과를 HTTP 응답으로 반환
+        String result = imageService.uploadImage(imageDto);
+        return ResponseEntity.ok(result);
     }
 
     // 랜덤 이미지 조회 엔드포인트
@@ -33,7 +33,7 @@ public class ImageController { // "클라이언트 요청을 받아서 처리"
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);  // 이미지 형식에 맞게 변경 (JPEG, PNG 등)
+        headers.setContentType(MediaType.IMAGE_JPEG);
         return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
     }
 }

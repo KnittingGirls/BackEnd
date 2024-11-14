@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "images")
 @Getter
 @Setter
-public class ImageEntity {
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
