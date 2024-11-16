@@ -29,7 +29,7 @@ public class SecurityConfig {
                     return corsConfiguration;
                 }))
                 .authorizeHttpRequests(config -> config
-                        .requestMatchers("auth//login/callback").permitAll()
+                        .requestMatchers("auth/login/callback").permitAll()
                         .anyRequest().permitAll()  // 다른 모든 요청 허용
                 )
                 .oauth2Login(oauth2Configurer -> oauth2Configurer

@@ -25,10 +25,14 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    // 로그인 페이지 매핑 (GET /auth/login)
+    // 로그인 페이지 매핑
     @GetMapping("/login")
     public String login() {
-        return "login";  // login.html로 리디렉션 (로그인 페이지)
+        String kakaoLoginUrl = "https://kauth.kakao.com/oauth/authorize?response_type=code"
+                + "&client_id=23d1da761622fc79819d5e2b74ccf70a"
+                + "&redirect_uri=http://localhost:8080/auth/login/callback";  // 백엔드 서버 주소
+
+        return "redirect:" + kakaoLoginUrl;  // 카카오 로그인 페이지로 리디렉션
     }
 
     // 카카오 로그인 후 콜백을 처리하는 메서드
@@ -43,6 +47,7 @@ public class AuthController {
         // 사용자 저장 또는 업데이트
         User user = kakaoOAuth2Service.saveOrUpdateUser(userInfo);
 
+        /*
         // JWT 토큰 생성
         String token = jwtTokenProvider.createToken(user.getId().toString());
 
@@ -57,6 +62,8 @@ public class AuthController {
         model.addAttribute("userInfo", userInfo);
 
         return "login_success";
+         */
+        return "redirect:http://localhost:8081/SelectActivity";
     }
 
     // 카카오 액세스 토큰 받아오기
