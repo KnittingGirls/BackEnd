@@ -25,13 +25,14 @@ public class ImageController {
                 return ResponseEntity.badRequest().body("이미지를 선택하세요.");
             }
 
-            String result = imageService.uploadImage(image); // 이미지 저장 서비스 호출
+            String result = imageService.uploadImage(image);
             return ResponseEntity.ok(result);
-
         } catch (Exception e) {
+            e.printStackTrace(); // 예외 로그를 서버 콘솔에 기록
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 실패: " + e.getMessage());
         }
     }
+
 
     // 랜덤 이미지 조회 엔드포인트
     @GetMapping("/random")
