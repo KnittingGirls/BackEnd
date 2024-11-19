@@ -20,6 +20,7 @@ public class ImageController {
     // 이미지 업로드 엔드포인트
     @PostMapping("/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image) {
+        System.out.println("Received file: " + image);
         try {
             if (image == null || image.isEmpty()) {
                 return ResponseEntity.badRequest().body("이미지를 선택하세요.");
