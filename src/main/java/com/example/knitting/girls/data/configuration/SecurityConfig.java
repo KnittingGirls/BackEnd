@@ -11,6 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -21,15 +23,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.addAllowedOrigin("http://localhost:8080");
-                    corsConfiguration.addAllowedMethod("POST");
-                    corsConfiguration.addAllowedMethod("GET");
-                    corsConfiguration.addAllowedHeader("*");
-                    corsConfiguration.setAllowCredentials(true);
+                    corsConfiguration.addAllowedOriginPattern("*"); // 모든 출처
+                    corsConfiguration.addAllowedMethod("*"); // 모든 HTTP
+                    corsConfiguration.addAllowedHeader("*"); // 모든 헤더
+                    corsConfiguration.setAllowCredentials(true); // 인증 정보 허용 (쿠키, Authorization 헤더 등)
                     return corsConfiguration;
                 }))
+
                 .authorizeHttpRequests(config -> config
-                        .requestMatchers("auth//login/callback").permitAll()
+                        .requestMatchers("auth/login/callback").permitAll()
                         .anyRequest().permitAll()  // 다른 모든 요청 허용
                 )
                 .oauth2Login(oauth2Configurer -> oauth2Configurer

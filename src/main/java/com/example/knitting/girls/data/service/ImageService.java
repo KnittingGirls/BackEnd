@@ -1,6 +1,5 @@
 package com.example.knitting.girls.data.service;
 
-import com.example.knitting.girls.data.dto.ImageDto;
 import com.example.knitting.girls.data.entity.Image;
 import com.example.knitting.girls.data.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +12,17 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
-public class ImageService { // "실제 로직 처리"
+public class ImageService {
 
     @Autowired
     private ImageRepository imageRepository;
 
     // 이미지 업로드
-    public String uploadImage(ImageDto imageDto) {
+    public String uploadImage(MultipartFile imageFile) {
         try {
-            MultipartFile imageFile = imageDto.getImage();
+            if (imageFile == null || imageFile.isEmpty()) {
+                return "이미지를 선택하세요.";
+            }
 
             // 이미지 데이터 바이트 배열로 변환
             byte[] imageData = imageFile.getBytes();
@@ -46,7 +47,7 @@ public class ImageService { // "실제 로직 처리"
         List<Image> images = imageRepository.findAll();
 
         if (images.isEmpty()) {
-            return null;  // DB에 이미지가 없으면 null 반환
+            return null; // DB에 이미지가 없으면 null 반환
         }
 
         // 랜덤 이미지 선택
@@ -56,7 +57,7 @@ public class ImageService { // "실제 로직 처리"
         return randomImage.getImageData();
     }
 
-    // 이미지 ID로 조회
+    // 이미지 ID로 조회 및 처리
     public String processImage(Long imageId) {
         Optional<Image> optionalImage = imageRepository.findById(imageId);
         if (optionalImage.isPresent()) {
