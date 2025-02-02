@@ -16,6 +16,7 @@ public class Post {
     private Long id;
     private String content;
     private LocalDateTime createdAt;
+    private String imageData; // Base64 형식으로 저장
 
     @ElementCollection
     @CollectionTable(name = "post_hashtags", joinColumns = @JoinColumn(name = "post_id"))
