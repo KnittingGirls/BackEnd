@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import java.util.Base64;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -120,6 +121,17 @@ public class PostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
         Bookmark bookmark = Bookmark.builder().user(user).post(post).build();
         bookmarkRepository.save(bookmark);
+    }
+
+    // 북마크 조회
+    public List<Post> getBookmarkedPosts(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        if (user == null) {
+            throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
+        }
+
+        List<Bookmark> bookmarks = bookmarkRepository.findByUser(user);
+        return bookmarks.stream().map(Bookmark::getPost).collect(Collectors.toList());
     }
 }
 

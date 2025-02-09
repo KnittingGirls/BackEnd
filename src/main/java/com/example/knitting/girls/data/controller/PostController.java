@@ -78,6 +78,12 @@ public class PostController {
     public void bookmarkPost(@PathVariable Long postId, @RequestParam String nickname) {
         postService.bookmarkPost(postId, nickname);
     }
+
+    // 내가 스크랩한 게시글 조회
+    @GetMapping("/bookmarks")
+    public List<Post> getBookmarkedPosts(@RequestParam String nickname) {
+        return postService.getBookmarkedPosts(nickname);
+    }
 }
 
 
