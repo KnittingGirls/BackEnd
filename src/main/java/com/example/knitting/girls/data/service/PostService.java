@@ -1,8 +1,12 @@
 package com.example.knitting.girls.data.service;
 
 import com.example.knitting.girls.data.dto.PostDto;
+import com.example.knitting.girls.data.entity.Bookmark;
+import com.example.knitting.girls.data.entity.Comment;
 import com.example.knitting.girls.data.entity.Post;
 import com.example.knitting.girls.data.entity.User;
+import com.example.knitting.girls.data.repository.BookmarkRepository;
+import com.example.knitting.girls.data.repository.CommentRepository;
 import com.example.knitting.girls.data.repository.PostRepository;
 import com.example.knitting.girls.data.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,22 +24,20 @@ import java.util.Base64;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-
-    public List<Post> getAllPosts() { // 모든 게시글
-        return postRepository.findAll();
-    }
+    private final CommentRepository commentRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     public Post createPost(PostDto postDto, String nickname, MultipartFile image) {
         User author = userRepository.findByNickname(nickname);
         if (author == null) {
-            throw new IllegalArgumentException("User not found");
+            throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
         }
 
         String imageData = null;
         if (image != null && !image.isEmpty()) {
             try {
                 byte[] imageBytes = image.getBytes();
-                imageData = Base64.getEncoder().encodeToString(imageBytes); // java.util.Base64 사용
+                imageData = Base64.getEncoder().encodeToString(imageBytes); // Base64 사용
             } catch (IOException e) {
                 throw new RuntimeException("파일 읽기 실패", e);
             }
@@ -51,16 +53,73 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public List<Post> searchByTag(String tag) { // 해시태그 검색
-        return postRepository.findByHashtagsContaining(tag);
+    // 모든 게시글 조회
+    public List<Post> getAllPosts() {
+        return postRepository.findAll();
     }
 
-    public List<Post> getUserPosts(String nickname) { // 유저가 쓴 게시글 조회
+    // 해시태그 검색
+    public List<Post> searchByTag(String tag) {
+        return postRepository.findByHashtagsContaining(tag);
+    }
+    // 유저가 쓴 게시글 조회
+    public List<Post> getUserPosts(String nickname) {
         User author = userRepository.findByNickname(nickname);
         if (author == null) {
-            throw new IllegalArgumentException("User not found");
+            throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
         }
         return postRepository.findByAuthor(author);
+    }
+
+    // 게시글 수정
+    public Post updatePost(Long postId, PostDto postDto, String nickname) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        if (!post.getAuthor().getNickname().equals(nickname)) {
+            throw new IllegalArgumentException("자신의 글만 수정할 수 있습니다.");
+        }
+        post.setContent(postDto.getContent());
+        post.setHashtags(postDto.getHashtags());
+        return postRepository.save(post);
+    }
+
+    // 게시글 삭제
+    public void deletePost(Long postId, String nickname) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        if (!post.getAuthor().getNickname().equals(nickname)) {
+            throw new IllegalArgumentException("자신의 글만 삭제할 수 있습니다.");
+        }
+        postRepository.delete(post);
+    }
+
+    // 좋아요 기능
+    public void likePost(Long postId, String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        if (!post.getLikes().add(user)) {
+            post.getLikes().remove(user); // 좋아요 취소
+        }
+        postRepository.save(post);
+    }
+
+    // 댓글
+    public Comment addComment(Long postId, String nickname, String content) {
+        User user = userRepository.findByNickname(nickname);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        Comment comment = Comment.builder()
+                .content(content)
+                .author(user)
+                .post(post)
+                .createdAt(LocalDateTime.now())
+                .build();
+        return commentRepository.save(comment);
+    }
+
+    // 스크랩(북마크)
+    public void bookmarkPost(Long postId, String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        Bookmark bookmark = Bookmark.builder().user(user).post(post).build();
+        bookmarkRepository.save(bookmark);
     }
 }
 
