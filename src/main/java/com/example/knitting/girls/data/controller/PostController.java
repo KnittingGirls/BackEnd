@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/posts")
@@ -33,9 +34,14 @@ public class PostController {
 
     // 모든 게시글 조회
     @GetMapping
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    public List<PostDto> getAllPosts() {
+        List<Post> posts = postService.getAllPosts();
+        List<PostDto> postDtos = posts.stream()
+                .map(post -> new PostDto(post))
+                .collect(Collectors.toList());
+        return postDtos;
     }
+
 
     // 해시태그로 검색
     @GetMapping("/search")
