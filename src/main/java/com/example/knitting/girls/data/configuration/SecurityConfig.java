@@ -21,13 +21,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.addAllowedOrigin("http://localhost:8080");
-                    corsConfiguration.addAllowedMethod("POST");
-                    corsConfiguration.addAllowedMethod("GET");
-                    corsConfiguration.addAllowedHeader("*");
-                    corsConfiguration.setAllowCredentials(true);
+                    corsConfiguration.addAllowedOriginPattern("*"); // 모든 도메인 허용
+                    corsConfiguration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
+                    corsConfiguration.addAllowedHeader("*"); // 모든 헤더 허용
+                    corsConfiguration.setAllowCredentials(true); // 인증 정보 허용
                     return corsConfiguration;
                 }))
+
                 .authorizeHttpRequests(config -> config
                         .requestMatchers("auth//login/callback").permitAll()
                         .anyRequest().permitAll()  // 다른 모든 요청 허용
