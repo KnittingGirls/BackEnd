@@ -25,38 +25,28 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    // 로그인 페이지 매핑 (GET /auth/login)
+    // 로그인 페이지 매핑
     @GetMapping("/login")
     public String login() {
-        return "login";  // login.html로 리디렉션 (로그인 페이지)
+        String kakaoLoginUrl = "https://kauth.kakao.com/oauth/authorize?response_type=code"
+                + "&client_id=23d1da761622fc79819d5e2b74ccf70a"
+                + "&redirect_uri=http://localhost:8080/auth/login/callback";
+
+        return "redirect:" + kakaoLoginUrl;  // 카카오 로그인 페이지로 리디렉션
     }
 
-    // 카카오 로그인 후 콜백을 처리하는 메서드
+    // 카카오 로그인 후 콜백 처리
     @GetMapping("/login/callback")
     public String kakaoLogin(@RequestParam String code, Model model, HttpServletResponse response) {
-        // 카카오 액세스 토큰 가져오기
         String accessToken = getKakaoAccessToken(code);
-
-        // 카카오 사용자 정보 가져오기
         KakaoUserDto userInfo = kakaoOAuth2Service.getUserInfo(accessToken);
-
-        // 사용자 저장 또는 업데이트
         User user = kakaoOAuth2Service.saveOrUpdateUser(userInfo);
-
-        // JWT 토큰 생성
         String token = jwtTokenProvider.createToken(user.getId().toString());
 
-        // 토큰을 쿠키에 저장
-        Cookie cookie = new Cookie("token", token);
-        cookie.setPath("/");  // 전체 경로에서 접근 가능
-        cookie.setMaxAge(60 * 60 * 24); // 1일 동안
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);  // 개발 환경에서는 false로 설정 (HTTPS가 아닌 경우)
-        response.addCookie(cookie);
+        // JWT 토큰 프론트엔드에 전달
+        String redirectUri = "http://localhost:8081/SelectActivity?token=" + token;
 
-        model.addAttribute("userInfo", userInfo);
-
-        return "login_success";
+        return "redirect:" + redirectUri;  // SelectActivity로 리디렉션
     }
 
     // 로그아웃

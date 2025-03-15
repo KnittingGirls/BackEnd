@@ -11,6 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -21,20 +23,20 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.addAllowedOriginPattern("*"); // 모든 도메인 허용
-                    corsConfiguration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
-                    corsConfiguration.addAllowedHeader("*"); // 모든 헤더 허용
-                    corsConfiguration.setAllowCredentials(true); // 인증 정보 허용
+                    corsConfiguration.addAllowedOriginPattern("*");
+                    corsConfiguration.addAllowedMethod("*");
+                    corsConfiguration.addAllowedHeader("*");
+                    corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
 
                 .authorizeHttpRequests(config -> config
-                        .requestMatchers("auth//login/callback").permitAll()
-                        .anyRequest().permitAll()  // 다른 모든 요청 허용
+                        .requestMatchers("auth/login/callback").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2Configurer -> oauth2Configurer
                         .loginPage("/login")
-                        .successHandler(successHandler()) // 로그인 성공 후 리디렉션
+                        .successHandler(successHandler())
                 );
 
         return http.build();
