@@ -49,6 +49,18 @@ public class AuthController {
         return "redirect:" + redirectUri;  // SelectActivity로 리디렉션
     }
 
+    // 로그아웃
+    @GetMapping("/logout")
+    public String logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+
+        return "login"; // 로그인 페이지로 리디렉션
+    }
+
     // 카카오 액세스 토큰 받아오기
     private String getKakaoAccessToken(String code) {
         RestTemplate restTemplate = new RestTemplate();
