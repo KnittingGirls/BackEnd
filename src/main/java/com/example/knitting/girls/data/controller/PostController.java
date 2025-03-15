@@ -42,7 +42,6 @@ public class PostController {
         return postDtos;
     }
 
-
     // 해시태그로 검색
     @GetMapping("/search")
     public List<Post> searchByTag(@RequestParam String tag) {
