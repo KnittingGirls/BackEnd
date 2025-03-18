@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 public class CommentDto {
     private Long id;
     private String content;
-    private LocalDateTime createdAt;  // ✅ 추가
+    private LocalDateTime createdAt;
     private UserDto author;
 
     public CommentDto(Comment comment) {
         this.id = comment.getId();
         this.content = comment.getContent();
-        this.createdAt = comment.getCreatedAt();  // ✅ 추가
+        this.createdAt = comment.getCreatedAt();
         this.author = new UserDto(comment.getAuthor());
     }
 }

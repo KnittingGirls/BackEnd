@@ -8,6 +8,7 @@ import com.example.knitting.girls.data.service.PostService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,9 +29,22 @@ public class PostController {
         try {
             postDto = objectMapper.readValue(postDtoStr, PostDto.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Invalid JSON format for postDto", e);
+            throw new RuntimeException("요청 형식이 올바르지 않습니다.", e);
         }
         return postService.createPost(postDto, nickname, image);
+    }
+
+    // 게시글 수정
+    @PutMapping("/{postId}")
+    public Post updatePost(@PathVariable Long postId, @RequestBody PostDto postDto, @RequestParam String nickname) {
+        return postService.updatePost(postId, postDto, nickname);
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable Long postId, @RequestParam String nickname) {
+        String message = postService.deletePost(postId, nickname);
+        return ResponseEntity.ok(message);
     }
 
     // 모든 게시글 조회
@@ -47,51 +61,40 @@ public class PostController {
 
     // 해시태그로 검색
     @GetMapping("/search")
-    public List<Post> searchByTag(@RequestParam String tag) {
+    public List<PostDetailDto> searchByTag(@RequestParam String tag) {
         return postService.searchByTag(tag);
     }
 
     // 작성자로 검색
     @GetMapping("/user")
-    public List<Post> getUserPosts(@RequestParam String nickname) {
+    public List<PostDetailDto> getUserPosts(@RequestParam String nickname) {
         return postService.getUserPosts(nickname);
-    }
-
-    // 게시글 수정
-    @PutMapping("/{postId}")
-    public Post updatePost(@PathVariable Long postId, @RequestBody PostDto postDto, @RequestParam String nickname) {
-        return postService.updatePost(postId, postDto, nickname);
-    }
-
-    // 게시글 삭제
-    @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable Long postId, @RequestParam String nickname) {
-        postService.deletePost(postId, nickname);
-    }
-
-    // 좋아요
-    @PostMapping("/{postId}/like")
-    public void likePost(@PathVariable Long postId, @RequestParam String nickname) {
-        postService.likePost(postId, nickname);
     }
 
     // 댓글
     @PostMapping("/{postId}/comment")
-    public Comment addComment(@PathVariable Long postId, @RequestParam String nickname, @RequestParam String content) {
+    public PostDetailDto addComment(@PathVariable Long postId, @RequestParam String nickname, @RequestParam String content) {
         return postService.addComment(postId, nickname, content);
+    }
+
+    // 좋아요
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<String> likePost(@PathVariable Long postId, @RequestParam String nickname) {
+        return ResponseEntity.ok(postService.likePost(postId, nickname));
     }
 
     // 북마크
     @PostMapping("/{postId}/bookmark")
-    public void bookmarkPost(@PathVariable Long postId, @RequestParam String nickname) {
-        postService.bookmarkPost(postId, nickname);
+    public ResponseEntity<String> bookmarkPost(@PathVariable Long postId, @RequestParam String nickname) {
+        return ResponseEntity.ok(postService.bookmarkPost(postId, nickname));
     }
 
-    // 내가 스크랩한 게시글 조회
+    // 북마크 목록 조회
     @GetMapping("/bookmarks")
-    public List<Post> getBookmarkedPosts(@RequestParam String nickname) {
+    public List<PostDetailDto> getBookmarkedPosts(@RequestParam String nickname) {
         return postService.getBookmarkedPosts(nickname);
     }
 }
+
 
 

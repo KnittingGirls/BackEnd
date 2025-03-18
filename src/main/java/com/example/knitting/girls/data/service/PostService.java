@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import java.util.Base64;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +32,35 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final BookmarkRepository bookmarkRepository;
 
+    private PostDetailDto convertToPostDetailDto(Post post) {
+        List<CommentDto> commentDtos = post.getComments().stream()
+                .map(comment -> new CommentDto(comment.getId(), comment.getContent(), comment.getCreatedAt(), new UserDto(comment.getAuthor())))
+                .collect(Collectors.toList());
+
+        List<UserDto> likedUsers = post.getLikes().stream()
+                .map(UserDto::new)
+                .collect(Collectors.toList());
+
+        List<UserDto> bookmarkedUsers = bookmarkRepository.findByPost(post).stream()
+                .map(bookmark -> new UserDto(bookmark.getUser()))
+                .collect(Collectors.toList());
+
+        return new PostDetailDto(post, commentDtos, likedUsers, bookmarkedUsers);
+    }
+
+    // 모든 게시글 조회
+    public List<PostDetailDto> getAllPosts() {
+        List<Post> posts = postRepository.findAll();
+        return posts.stream().map(this::convertToPostDetailDto).collect(Collectors.toList());
+    }
+
+    // 특정 게시글 조회
+    public PostDetailDto getPostById(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        return convertToPostDetailDto(post);
+    }
+
+    // 게시글 작성
     public Post createPost(PostDto postDto, String nickname, MultipartFile image) {
         User author = userRepository.findByNickname(nickname);
         if (author == null) {
@@ -41,7 +71,7 @@ public class PostService {
         if (image != null && !image.isEmpty()) {
             try {
                 byte[] imageBytes = image.getBytes();
-                imageData = Base64.getEncoder().encodeToString(imageBytes); // Base64 사용
+                imageData = Base64.getEncoder().encodeToString(imageBytes);
             } catch (IOException e) {
                 throw new RuntimeException("파일 읽기 실패", e);
             }
@@ -57,49 +87,6 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    // 모든 게시글 조회
-    public List<PostDetailDto> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        return posts.stream().map(this::convertToPostDetailDto).collect(Collectors.toList());
-    }
-
-    // 특정 게시글 조회
-    public PostDetailDto getPostById(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-        return convertToPostDetailDto(post);
-    }
-
-    private PostDetailDto convertToPostDetailDto(Post post) {
-        List<CommentDto> commentDtos = post.getComments().stream()
-                .map(comment -> new CommentDto(comment.getId(), comment.getContent(), comment.getCreatedAt(), new UserDto(comment.getAuthor())))
-                .collect(Collectors.toList());
-
-        List<UserDto> likedUsers = post.getLikes().stream()
-                .map(UserDto::new)
-                .collect(Collectors.toList());
-
-        // 북마크한 사용자 리스트
-        List<UserDto> bookmarkedUsers = bookmarkRepository.findByPost(post).stream()
-                .map(bookmark -> new UserDto(bookmark.getUser()))
-                .collect(Collectors.toList());
-
-        return new PostDetailDto(post, commentDtos, likedUsers, bookmarkedUsers);
-    }
-
-
-    // 해시태그 검색
-    public List<Post> searchByTag(String tag) {
-        return postRepository.findByHashtagsContaining(tag);
-    }
-    // 유저가 쓴 게시글 조회
-    public List<Post> getUserPosts(String nickname) {
-        User author = userRepository.findByNickname(nickname);
-        if (author == null) {
-            throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
-        }
-        return postRepository.findByAuthor(author);
-    }
-
     // 게시글 수정
     public Post updatePost(Long postId, PostDto postDto, String nickname) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
@@ -112,26 +99,36 @@ public class PostService {
     }
 
     // 게시글 삭제
-    public void deletePost(Long postId, String nickname) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+    public String deletePost(Long postId, String nickname) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
         if (!post.getAuthor().getNickname().equals(nickname)) {
             throw new IllegalArgumentException("자신의 글만 삭제할 수 있습니다.");
         }
         postRepository.delete(post);
+        return "게시글 삭제됨";
     }
 
-    // 좋아요 기능
-    public void likePost(Long postId, String nickname) {
-        User user = userRepository.findByNickname(nickname);
-        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-        if (!post.getLikes().add(user)) {
-            post.getLikes().remove(user); // 좋아요 취소
+    // 해시태그로 검색
+    public List<PostDetailDto> searchByTag(String tag) {
+        return postRepository.findByHashtagsContaining(tag).stream()
+                .map(this::convertToPostDetailDto)
+                .collect(Collectors.toList());
+    }
+
+    // 작성자로 검색
+    public List<PostDetailDto> getUserPosts(String nickname) {
+        User author = userRepository.findByNickname(nickname);
+        if (author == null) {
+            throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
         }
-        postRepository.save(post);
+        return postRepository.findByAuthor(author).stream()
+                .map(this::convertToPostDetailDto)
+                .collect(Collectors.toList());
     }
 
     // 댓글
-    public Comment addComment(Long postId, String nickname, String content) {
+    public PostDetailDto addComment(Long postId, String nickname, String content) {
         User user = userRepository.findByNickname(nickname);
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
         Comment comment = Comment.builder()
@@ -140,26 +137,49 @@ public class PostService {
                 .post(post)
                 .createdAt(LocalDateTime.now())
                 .build();
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
+        return convertToPostDetailDto(post);
     }
 
-    // 스크랩(북마크)
-    public void bookmarkPost(Long postId, String nickname) {
+    // 좋아요
+    public String likePost(Long postId, String nickname) {
         User user = userRepository.findByNickname(nickname);
         Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-        Bookmark bookmark = Bookmark.builder().user(user).post(post).build();
-        bookmarkRepository.save(bookmark);
+        if (!post.getLikes().add(user)) {
+            post.getLikes().remove(user);
+            postRepository.save(post);
+            return "좋아요 삭제됨";
+        }
+        postRepository.save(post);
+        return "좋아요 추가됨";
     }
 
-    // 북마크 조회
-    public List<Post> getBookmarkedPosts(String nickname) {
+    // 북마크
+    public String bookmarkPost(Long postId, String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        Optional<Bookmark> existingBookmark = bookmarkRepository.findByUser(user).stream()
+                .filter(b -> b.getPost().equals(post))
+                .findFirst();
+        if (existingBookmark.isPresent()) {
+            bookmarkRepository.delete(existingBookmark.get());
+            return "북마크 삭제됨";
+        }
+        Bookmark bookmark = Bookmark.builder().user(user).post(post).build();
+        bookmarkRepository.save(bookmark);
+        return "북마크 추가됨";
+    }
+
+    // 북마크 목록 조회
+    public List<PostDetailDto> getBookmarkedPosts(String nickname) {
         User user = userRepository.findByNickname(nickname);
         if (user == null) {
             throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
         }
-
-        List<Bookmark> bookmarks = bookmarkRepository.findByUser(user);
-        return bookmarks.stream().map(Bookmark::getPost).collect(Collectors.toList());
+        return bookmarkRepository.findByUser(user).stream()
+                .map(Bookmark::getPost)
+                .map(this::convertToPostDetailDto)
+                .collect(Collectors.toList());
     }
 }
 

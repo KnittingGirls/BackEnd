@@ -14,11 +14,9 @@ public class PostDetailDto {
     private String content;
     private List<String> hashtags;
     private String imageData;
-
     private Long authorId;
     private String authorNickname;
     private String authorProfileImageUrl;
-
     private List<CommentDto> comments;
     private int likeCount;
     private List<UserDto> likedUsers;
