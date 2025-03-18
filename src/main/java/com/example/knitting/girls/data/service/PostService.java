@@ -1,6 +1,9 @@
 package com.example.knitting.girls.data.service;
 
+import com.example.knitting.girls.data.dto.CommentDto;
+import com.example.knitting.girls.data.dto.PostDetailDto;
 import com.example.knitting.girls.data.dto.PostDto;
+import com.example.knitting.girls.data.dto.UserDto;
 import com.example.knitting.girls.data.entity.Bookmark;
 import com.example.knitting.girls.data.entity.Comment;
 import com.example.knitting.girls.data.entity.Post;
@@ -55,9 +58,34 @@ public class PostService {
     }
 
     // 모든 게시글 조회
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public List<PostDetailDto> getAllPosts() {
+        List<Post> posts = postRepository.findAll();
+        return posts.stream().map(this::convertToPostDetailDto).collect(Collectors.toList());
     }
+
+    // 특정 게시글 조회
+    public PostDetailDto getPostById(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        return convertToPostDetailDto(post);
+    }
+
+    private PostDetailDto convertToPostDetailDto(Post post) {
+        List<CommentDto> commentDtos = post.getComments().stream()
+                .map(comment -> new CommentDto(comment.getId(), comment.getContent(), comment.getCreatedAt(), new UserDto(comment.getAuthor())))
+                .collect(Collectors.toList());
+
+        List<UserDto> likedUsers = post.getLikes().stream()
+                .map(UserDto::new)
+                .collect(Collectors.toList());
+
+        // 북마크한 사용자 리스트
+        List<UserDto> bookmarkedUsers = bookmarkRepository.findByPost(post).stream()
+                .map(bookmark -> new UserDto(bookmark.getUser()))
+                .collect(Collectors.toList());
+
+        return new PostDetailDto(post, commentDtos, likedUsers, bookmarkedUsers);
+    }
+
 
     // 해시태그 검색
     public List<Post> searchByTag(String tag) {

@@ -1,5 +1,6 @@
 package com.example.knitting.girls.data.controller;
 
+import com.example.knitting.girls.data.dto.PostDetailDto;
 import com.example.knitting.girls.data.dto.PostDto;
 import com.example.knitting.girls.data.entity.Comment;
 import com.example.knitting.girls.data.entity.Post;
@@ -34,12 +35,14 @@ public class PostController {
 
     // 모든 게시글 조회
     @GetMapping
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = postService.getAllPosts();
-        List<PostDto> postDtos = posts.stream()
-                .map(post -> new PostDto(post))
-                .collect(Collectors.toList());
-        return postDtos;
+    public List<PostDetailDto> getAllPosts() {
+        return postService.getAllPosts();
+    }
+
+    // 특정 게시글 조회
+    @GetMapping("/{postId}")
+    public PostDetailDto getPostById(@PathVariable Long postId) {
+        return postService.getPostById(postId);
     }
 
     // 해시태그로 검색
