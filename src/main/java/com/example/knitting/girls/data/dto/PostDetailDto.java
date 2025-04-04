@@ -1,8 +1,10 @@
 package com.example.knitting.girls.data.dto;
 
 import com.example.knitting.girls.data.entity.Post;
+import com.example.knitting.girls.data.entity.PostImage;
 import lombok.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -13,7 +15,7 @@ public class PostDetailDto {
     private Long id;
     private String content;
     private List<String> hashtags;
-    private String imageData;
+    private List<String> imageData;  // 여러 이미지를 위한 리스트
     private Long authorId;
     private String authorNickname;
     private String authorProfileImageUrl;
@@ -27,7 +29,9 @@ public class PostDetailDto {
         this.id = post.getId();
         this.content = post.getContent();
         this.hashtags = post.getHashtags();
-        this.imageData = post.getImageData();
+        this.imageData = post.getImages().stream()
+                .map(PostImage::getImageData)
+                .collect(Collectors.toList());
         this.authorId = post.getAuthor().getId();
         this.authorNickname = post.getAuthor().getNickname();
         this.authorProfileImageUrl = post.getAuthor().getProfileImageUrl();
@@ -38,4 +42,3 @@ public class PostDetailDto {
         this.bookmarkedUsers = bookmarkedUsers;
     }
 }
-

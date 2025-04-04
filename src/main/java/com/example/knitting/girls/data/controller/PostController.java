@@ -23,15 +23,17 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping(consumes = {"multipart/form-data"})
-    public Post createPost(@RequestParam("postDto") String postDtoStr, @RequestParam String nickname, @RequestPart(value = "image", required = false) MultipartFile image) {
+    public Post createPost(@RequestParam("postDto") String postDtoStr,
+                           @RequestParam String nickname,
+                           @RequestPart(value = "images", required = false) List<MultipartFile> images) {  // 여러 이미지 업로드
         ObjectMapper objectMapper = new ObjectMapper();
         PostDto postDto;
         try {
             postDto = objectMapper.readValue(postDtoStr, PostDto.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("요청 형식이 올바르지 않습니다.", e);
+            throw new RuntimeException("요청 형식 오류", e);
         }
-        return postService.createPost(postDto, nickname, image);
+        return postService.createPost(postDto, nickname, images);
     }
 
     // 게시글 수정
@@ -95,6 +97,7 @@ public class PostController {
         return postService.getBookmarkedPosts(nickname);
     }
 }
+
 
 
 
