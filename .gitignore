@@ -1,6 +1,6 @@
 # Ignore application.properties
 /src/main/resources/application.properties
-
+*.pth
 HELP.md
 .gradle
 build/
