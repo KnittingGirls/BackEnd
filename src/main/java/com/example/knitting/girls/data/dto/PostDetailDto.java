@@ -15,7 +15,7 @@ public class PostDetailDto {
     private Long id;
     private String content;
     private List<String> hashtags;
-    private List<String> imageData;  // 여러 이미지를 위한 리스트
+    private List<String> imageData;
     private Long authorId;
     private String authorNickname;
     private String authorProfileImageUrl;

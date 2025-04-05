@@ -43,10 +43,19 @@ public class AuthController {
         User user = kakaoOAuth2Service.saveOrUpdateUser(userInfo);
         String token = jwtTokenProvider.createToken(user.getId().toString());
 
-        // JWT 토큰 프론트엔드에 전달
-        String redirectUri = "http://localhost:8081/SelectActivity?token=" + token;
+        Long userId = user.getId();
+        String nickname = user.getNickname();
 
-        return "redirect:" + redirectUri;  // SelectActivity로 리디렉션
+        try {
+            nickname = java.net.URLEncoder.encode(nickname, "UTF-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String redirectUri = String.format("http://localhost:8081/SelectActivity?token=%s&id=%d&nickname=%s",
+                token, userId, nickname);
+
+        return "redirect:" + redirectUri;
     }
 
     // 로그아웃
