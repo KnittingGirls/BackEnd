@@ -1,5 +1,6 @@
 package com.example.knitting.girls.data.controller;
 
+import com.example.knitting.girls.data.utils.MultipartInputStreamFileResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -13,40 +14,33 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-
 @RestController
 @RequestMapping("/model-server")
 public class ModelServerController {
 
-    private final RestTemplate restTemplate;
-
-    @Autowired
-    public ModelServerController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
     @PostMapping("/predict")
-    public ResponseEntity<String> predictFromModel(@RequestParam("image") MultipartFile imageFile) throws IOException {
-        File tempFile = File.createTempFile("upload-", imageFile.getOriginalFilename());
-        imageFile.transferTo(tempFile);
+    public ResponseEntity<?> predict(@RequestParam("file") MultipartFile file) {
+        try {
+            // FastAPI 서버 주소
+            String fastapiUrl = "http://localhost:8000/predict";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            // 이미지 파일을 Multipart로 보낼 준비
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", new FileSystemResource(tempFile));
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Map> response = restTemplate.postForEntity(fastapiUrl, requestEntity, Map.class);
 
-        String fastApiUrl = "http://localhost:8000/predict";
-        ResponseEntity<Map> response = restTemplate.postForEntity(fastApiUrl, requestEntity, Map.class);
-
-        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            String base64Image = (String) response.getBody().get("segmentation_image_base64");
-            return ResponseEntity.ok(base64Image);
+            return ResponseEntity.ok(response.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
         }
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("FastAPI 예측 실패");
     }
 }
+
 

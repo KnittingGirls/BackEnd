@@ -1,5 +1,5 @@
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.responses import JSONResponse, FileResponse
 from patch_single_pdf import process_image
 
 from PIL import Image as PILImage
@@ -100,6 +100,13 @@ async def predict(file: UploadFile = File(...)):
         "mask_path": mask_path,
         "pdf_path": pdf_path
     })
+
+@app.get("/pdfs/{filename}")
+async def get_pdf(filename: str):
+    pdf_path = os.path.join(os.path.dirname(__file__), "outputs", "pdfs", filename)
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF not found")
+    return FileResponse(pdf_path, media_type='application/pdf')
 
 if __name__ == "__main__":
     import uvicorn
