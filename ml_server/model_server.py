@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
+from patch_single_pdf import process_image
 
-import base64
 from PIL import Image as PILImage
 from PIL import Image
 import io
@@ -17,8 +17,11 @@ warnings.filterwarnings("ignore")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 클래스
-select_classes = ['single_jersey', 'purl', 'ajour', 'background']
-select_class_rgb_values = [[0, 255, 255], [0, 255, 0], [255, 255, 0], [0, 0, 0]]
+# select_classes = ['single_jersey', 'purl', 'ajour', 'background']
+# select_class_rgb_values = [[0, 255, 255], [0, 255, 0], [255, 255, 0], [0, 0, 0]]
+
+select_classes = ['single_jersey', 'rib', 'purl','moss','ajour','background']
+select_class_rgb_values =  [[0,255,255],[255,0,0],[0,255,0],[255,20,147],[255,255,0],[0,0,0]]
 
 def reverse_one_hot(image):
     return np.argmax(image, axis=-1)
@@ -72,12 +75,30 @@ async def predict(file: UploadFile = File(...)):
 
     result_img = PILImage.fromarray(pred_mask_color.astype(np.uint8))
 
-    buffer = io.BytesIO()
-    result_img.save(buffer, format="PNG")
-    img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    import uuid
+    base_dir = os.path.dirname(__file__)
+    mask_dir = os.path.join(base_dir, "outputs", "masks")
+    pdf_dir = os.path.join(base_dir, "outputs", "pdfs")
+    os.makedirs(mask_dir, exist_ok=True)
+    os.makedirs(pdf_dir, exist_ok=True)
+
+    unique_id = uuid.uuid4().hex
+    mask_path = os.path.join(mask_dir, f"{unique_id}_seg.png")
+    pdf_path = os.path.join(pdf_dir, f"{unique_id}_grid.pdf")
+
+    result_img.save(mask_path, format="PNG")
+
+    try:
+        process_image(mask_path, pdf_path, scale_factor=4)
+    except Exception as e:
+        return JSONResponse(content={
+            "error": f"PDF 변환 실패: {str(e)}"
+        }, status_code=500)
 
     return JSONResponse(content={
-        "segmentation_image_base64": img_str
+        "message": "라벨 이미지 + PDF 도안 생성 완료",
+        "mask_path": mask_path,
+        "pdf_path": pdf_path
     })
 
 if __name__ == "__main__":
