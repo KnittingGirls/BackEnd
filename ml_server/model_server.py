@@ -83,8 +83,9 @@ async def predict(file: UploadFile = File(...)):
     os.makedirs(pdf_dir, exist_ok=True)
 
     unique_id = uuid.uuid4().hex
+    pdf_filename = f"{unique_id}_grid.pdf"
     mask_path = os.path.join(mask_dir, f"{unique_id}_seg.png")
-    pdf_path = os.path.join(pdf_dir, f"{unique_id}_grid.pdf")
+    pdf_path = os.path.join(pdf_dir, pdf_filename)
 
     result_img.save(mask_path, format="PNG")
 
@@ -97,9 +98,9 @@ async def predict(file: UploadFile = File(...)):
 
     return JSONResponse(content={
         "message": "라벨 이미지 + PDF 도안 생성 완료",
-        "mask_path": mask_path,
-        "pdf_path": pdf_path
+        "pdf_filename": pdf_filename  # 여기만 넘겨줌
     })
+
 
 @app.get("/pdfs/{filename}")
 async def get_pdf(filename: str):

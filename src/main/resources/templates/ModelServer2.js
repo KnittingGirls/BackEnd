@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function KnitUploader() {
-  const [pdfPath, setPdfPath] = useState(null);
+  const [pdfFilename, setPdfFilename] = useState(null);
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
@@ -16,7 +16,7 @@ function KnitUploader() {
         }
       });
 
-      setPdfPath(res.data.pdf_path);  // FastAPI 응답 경로
+      setPdfFilename(res.data.pdf_filename);  // FastAPI 응답 경로
     } catch (err) {
       console.error("에러:", err);
     }
@@ -26,11 +26,10 @@ function KnitUploader() {
     <div>
       <h2>스웨터 이미지 업로드</h2>
       <input type="file" accept="image/*" onChange={handleUpload} />
-      {pdfPath && (
-        <div>
-          <p>PDF 도안:</p>
-          <a href={`http://localhost:8000/${pdfPath}`} target="_blank" rel="noreferrer">도안 열기</a>
-        </div>
+      {pdfFilename && (
+        <a href={`http://localhost:8000/pdfs/${pdfFilename}`} target="_blank" rel="noreferrer">
+          도안 열기
+        </a>
       )}
     </div>
   );
