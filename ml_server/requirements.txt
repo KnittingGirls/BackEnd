@@ -6,3 +6,6 @@ numpy==1.24.4
 pillow
 matplotlib
 opencv-python
+opencv-python-headless
+segmentation-models-pytorch
+tqdm

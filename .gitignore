@@ -1,6 +1,19 @@
 # Ignore application.properties
 /src/main/resources/application.properties
 *.pth
+
+inputs/*
+!inputs/.gitkeep
+
+outputs/masks/*
+!outputs/masks/.gitkeep
+
+outputs/SCHPs/*
+!outputs/SCHPs/.gitkeep
+
+outputs/pdfs/*
+!outputs/pdfs/.gitkeep
+
 HELP.md
 .gradle
 build/
