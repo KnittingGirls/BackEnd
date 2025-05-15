@@ -102,7 +102,7 @@ async def predict(file: UploadFile = File(...)):
     schp_cmd = [
         sys.executable,
         "simple_extractor.py",
-        "--dataset", "lip",
+        "--dataset", "pascal",
         "--model-restore", "pascal.pth",
         "--gpu", "0",
         "--input-dir", inputs_dir,
