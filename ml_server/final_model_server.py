@@ -17,6 +17,9 @@ from patch_single_pdf import process_image
 from make_grid import generate_knit_pattern_pdf
 import segmentation_models_pytorch as smp
 
+front_outline = np.load("front_template.npz", allow_pickle=True)["outline"]
+sleeve_outline = np.load("sleeve_template.npz", allow_pickle=True)["outline"]
+
 # 기본 세팅
 app = FastAPI()
 warnings.filterwarnings("ignore")
@@ -45,7 +48,7 @@ deeplab_model = smp.DeepLabV3Plus(
 )
 if os.path.exists("best_model.pth"):
     deeplab_model = torch.load("best_model.pth", map_location=DEVICE)
-    print(" DeepLab 로딩 완료")
+    print("DeepLab 로딩 완료")
 else:
     raise FileNotFoundError("best_model.pth not found")
 
@@ -113,18 +116,26 @@ async def predict(file: UploadFile = File(...)):
     except subprocess.CalledProcessError as e:
         return JSONResponse(status_code=500, content={"error": f"SCHP 실패: {str(e)}"})
 
-    expected_schp_file = f"{unique_id}_input.png".replace(".png", ".png")  # 이름 그대로
+    expected_schp_file = f"{unique_id}_input.png".replace(".png", ".png")
     actual_schp_path = os.path.join(schps_dir, expected_schp_file)
     if not os.path.exists(actual_schp_path):
         return JSONResponse(status_code=500, content={"error": "SCHP 결과 이미지 없음"})
 
     os.rename(actual_schp_path, schp_path)
 
-    # 이미지 병합하여 PDF 생성
+    # PDF 생성 - fin_fin.py 호출
+    finfin_cmd = [
+        sys.executable,
+        "fin_fin.py",
+        "--deep", deeplab_path,
+        "--schp", schp_path,
+        "--output", pdf_path
+    ]
+
     try:
-        generate_knit_pattern_pdf(deeplab_path, schp_path, pdf_path)
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": f"PDF 병합 실패: {str(e)}"})
+        subprocess.run(finfin_cmd, check=True)
+    except subprocess.CalledProcessError as e:
+        return JSONResponse(status_code=500, content={"error": f"도안 PDF 생성 실패: {str(e)}"})
 
     return JSONResponse(content={
         "message": "도안 생성 성공",
