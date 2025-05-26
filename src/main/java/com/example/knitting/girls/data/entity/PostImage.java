@@ -22,7 +22,7 @@ public class PostImage {
     private Post post;
     private LocalDateTime createdAt;
 
-    @Column(name = "image_path")
+    @Column(name = "image_path") // base64 대신 이미지 파일명 저장
     private String imagePath;
 
 }

@@ -24,5 +24,5 @@ public class Image {
     private byte[] imageData;
 
     @Column(name = "upload_date", nullable = false)
-    private LocalDateTime uploadTime = LocalDateTime.now(); // 업로드 시간 기록
+    private LocalDateTime uploadTime = LocalDateTime.now();
 }

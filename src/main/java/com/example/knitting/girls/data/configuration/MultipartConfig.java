@@ -13,4 +13,4 @@ public class MultipartConfig {
         return new StandardServletMultipartResolver();
     }
 }
- // 이미지 업로드 시 필요
+ // base64로 이미지 업로드 시 필요 -> 사용 안 함. Webconfig로 대체

@@ -2,7 +2,6 @@ package com.example.knitting.girls.data.controller;
 
 import com.example.knitting.girls.data.dto.PostDetailDto;
 import com.example.knitting.girls.data.dto.PostDto;
-import com.example.knitting.girls.data.entity.Comment;
 import com.example.knitting.girls.data.entity.Post;
 import com.example.knitting.girls.data.service.PostService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,38 +12,45 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // 게시글 작성
+    // 게시글 작성 (DTO로 반환)
     @PostMapping(consumes = {"multipart/form-data"})
-    public Post createPost(@RequestParam("postDto") String postDtoStr,
-                           @RequestParam String nickname,
-                           @RequestPart(value = "images", required = false) List<MultipartFile> images) {  // 여러 이미지 업로드
-        ObjectMapper objectMapper = new ObjectMapper();
+    public PostDetailDto createPost(
+            @RequestParam("postDto") String postDtoStr,
+            @RequestParam String nickname,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
         PostDto postDto;
         try {
             postDto = objectMapper.readValue(postDtoStr, PostDto.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("요청 형식 오류", e);
         }
-        return postService.createPost(postDto, nickname, images);
+        Post saved = postService.createPost(postDto, nickname, images);
+        return postService.getPostById(saved.getId());
     }
 
-    // 게시글 수정
+    // 게시글 수정 (DTO로 반환)
     @PutMapping("/{postId}")
-    public Post updatePost(@PathVariable Long postId, @RequestBody PostDto postDto, @RequestParam String nickname) {
-        return postService.updatePost(postId, postDto, nickname);
+    public PostDetailDto updatePost(
+            @PathVariable Long postId,
+            @RequestBody PostDto postDto,
+            @RequestParam String nickname) {
+        postService.updatePost(postId, postDto, nickname);
+        return postService.getPostById(postId);
     }
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable Long postId, @RequestParam String nickname) {
+    public ResponseEntity<String> deletePost(
+            @PathVariable Long postId,
+            @RequestParam String nickname) {
         String message = postService.deletePost(postId, nickname);
         return ResponseEntity.ok(message);
     }
@@ -73,21 +79,28 @@ public class PostController {
         return postService.getUserPosts(nickname);
     }
 
-    // 댓글
+    // 댓글 작성
     @PostMapping("/{postId}/comment")
-    public PostDetailDto addComment(@PathVariable Long postId, @RequestParam String nickname, @RequestParam String content) {
+    public PostDetailDto addComment(
+            @PathVariable Long postId,
+            @RequestParam String nickname,
+            @RequestParam String content) {
         return postService.addComment(postId, nickname, content);
     }
 
     // 좋아요
     @PostMapping("/{postId}/like")
-    public ResponseEntity<String> likePost(@PathVariable Long postId, @RequestParam String nickname) {
+    public ResponseEntity<String> likePost(
+            @PathVariable Long postId,
+            @RequestParam String nickname) {
         return ResponseEntity.ok(postService.likePost(postId, nickname));
     }
 
     // 북마크
     @PostMapping("/{postId}/bookmark")
-    public ResponseEntity<String> bookmarkPost(@PathVariable Long postId, @RequestParam String nickname) {
+    public ResponseEntity<String> bookmarkPost(
+            @PathVariable Long postId,
+            @RequestParam String nickname) {
         return ResponseEntity.ok(postService.bookmarkPost(postId, nickname));
     }
 

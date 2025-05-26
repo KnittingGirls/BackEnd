@@ -24,7 +24,7 @@ public class ModelServerController {
             // FastAPI 서버 주소
             String fastapiUrl = "http://localhost:8000/predict";
 
-            // 이미지 파일을 Multipart로 보낼 준비
+            // 이미지 파일을 Multipart로 보내기
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
