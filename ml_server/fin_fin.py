@@ -57,14 +57,14 @@ def get_dominant_symbol(part_rgb, deep_img, schp_img):
         return min(deep_to_symbol.keys(), key=lambda c: np.linalg.norm(np.array(color) - np.array(c)))
     return deep_to_symbol.get(closest_color(dominant_color), '.')
 
-def auto_scale_outline(outline, target_grid=(200, 150), margin_ratio=0.9):
+def auto_scale_outline(outline, target_grid=(200, 150), margin_ratio=0.94):
     rows, cols = target_grid
     ox, oy = outline[:, 0], outline[:, 1]
     w = ox.max() - ox.min()
     h = oy.max() - oy.min()
     scale = min((cols * margin_ratio) / w, (rows * margin_ratio) / h)
     center = outline.mean(axis=0)
-    return ((outline - center) * scale + center).astype(int)
+    return ((outline - center) * scale + center)
 
 def inside_outline(x, y, outline):
     return MplPath(outline).contains_point((x + 0.5, y + 0.5))
@@ -94,7 +94,7 @@ def plot_pattern_with_legend(grid_size, outline, pattern, color='black'):
                         gx = x + dx
                         gy = y + dy
                         if 0 <= gx < cols and 0 <= gy < rows:
-                            ax.text(gx + 0.5, rows - gy - 0.5, char,
+                            ax.text(gx + 0.48, rows - gy - 0.48, char,
                                     fontsize=3, ha='center', va='center',
                                     family='monospace')
 
