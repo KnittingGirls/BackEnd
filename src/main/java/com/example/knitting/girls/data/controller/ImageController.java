@@ -1,5 +1,7 @@
 package com.example.knitting.girls.data.controller;
 
+// 더 사용 안 함.
+
 import com.example.knitting.girls.data.dto.ImageDto;
 import com.example.knitting.girls.data.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;

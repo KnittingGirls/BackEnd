@@ -97,7 +97,3 @@ public class PostController {
         return postService.getBookmarkedPosts(nickname);
     }
 }
-
-
-
-

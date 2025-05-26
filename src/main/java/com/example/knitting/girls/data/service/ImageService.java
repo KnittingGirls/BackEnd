@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
+// 안 씀
+
 @Service
 public class ImageService {
 

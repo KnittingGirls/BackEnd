@@ -20,7 +20,10 @@ public class PostImage {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
-    private String imageData;
     private LocalDateTime createdAt;
+
+    @Column(name = "image_path")
+    private String imagePath;
+
 }
 

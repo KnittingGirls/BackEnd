@@ -10,12 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,13 +29,24 @@ public class PostService {
     private final BookmarkRepository bookmarkRepository;
     private final PostImageRepository postImageRepository;
     private PostDetailDto convertToPostDetailDto(Post post) {
-        List<CommentDto> commentDtos = post.getComments().stream()
-                .map(comment -> new CommentDto(comment.getId(), comment.getContent(), comment.getCreatedAt(), new UserDto(comment.getAuthor())))
-                .collect(Collectors.toList());
+        List<CommentDto> commentDtos = null;
+        if (post.getComments() != null) {
+            commentDtos = post.getComments().stream()
+                    .map(comment -> new CommentDto(
+                            comment.getId(),
+                            comment.getContent(),
+                            comment.getCreatedAt(),
+                            new UserDto(comment.getAuthor())
+                    ))
+                    .collect(Collectors.toList());
+        }
 
-        List<UserDto> likedUsers = post.getLikes().stream()
-                .map(UserDto::new)
-                .collect(Collectors.toList());
+        List<UserDto> likedUsers = null;
+        if (post.getLikes() != null) {
+            likedUsers = post.getLikes().stream()
+                    .map(UserDto::new)
+                    .collect(Collectors.toList());
+        }
 
         List<UserDto> bookmarkedUsers = bookmarkRepository.findByPost(post).stream()
                 .map(bookmark -> new UserDto(bookmark.getUser()))
@@ -74,25 +87,32 @@ public class PostService {
         if (images != null && !images.isEmpty()) {
             for (MultipartFile image : images) {
                 try {
-                    byte[] imageBytes = image.getBytes();
-                    String imageData = Base64.getEncoder().encodeToString(imageBytes);
+                    String originalFilename = image.getOriginalFilename();
+                    String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                    String fileName = UUID.randomUUID() + extension;
+
+                    String uploadDir = System.getProperty("user.dir") + "/uploads/";
+                    File dir = new File(uploadDir);
+                    if (!dir.exists()) dir.mkdirs();  // 폴더 없으면 생성
+
+                    File destination = new File(uploadDir + fileName);
+                    image.transferTo(destination);  // 이미지 저장
 
                     PostImage postImage = PostImage.builder()
-                            .post(post) // 게시글과 연결
-                            .imageData(imageData)
+                            .post(post)
+                            .imagePath(fileName)  // DB에는 파일 이름만 저장
                             .createdAt(LocalDateTime.now())
                             .build();
-                    postImageRepository.save(postImage); // 이미지 저장
+                    postImageRepository.save(postImage);
                 } catch (IOException e) {
-                    throw new RuntimeException("파일 읽기 실패", e);
+                    e.printStackTrace();
+                    throw new RuntimeException("이미지 저장 실패", e);
                 }
             }
         }
 
         return post;
     }
-
-
 
     // 게시글 수정
     public Post updatePost(Long postId, PostDto postDto, String nickname) {

@@ -2,6 +2,7 @@ package com.example.knitting.girls.data.dto;
 
 import com.example.knitting.girls.data.entity.Post;
 import com.example.knitting.girls.data.entity.PostImage;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public class PostDto {
     private Long id;
     private String content;
     private List<String> hashtags;
+
+    @JsonProperty("images")
     private List<String> imageData;
 
     public PostDto(Post post) {
@@ -23,7 +26,8 @@ public class PostDto {
         this.content = post.getContent();
         this.hashtags = post.getHashtags();
         this.imageData = post.getImages().stream()
-                .map(PostImage::getImageData)
+                .map(pi -> "/images/" + pi.getImagePath())
                 .collect(Collectors.toList());
     }
 }
+
