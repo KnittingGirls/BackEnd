@@ -26,7 +26,7 @@ public class PostDto {
         this.content = post.getContent();
         this.hashtags = post.getHashtags();
         this.imageData = post.getImages().stream()
-                .map(pi -> "/images/" + pi.getImagePath())
+                .map(pi -> "/uploads/" + pi.getImagePath())
                 .collect(Collectors.toList());
     }
 }

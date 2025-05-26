@@ -49,7 +49,7 @@ public class PostDetailDto {
 
         // 이미지 URL 매핑
         this.imageData = post.getImages().stream()
-                .map(pi -> "/images/" + pi.getImagePath())
+                .map(pi -> "/uploads/" + pi.getImagePath())
                 .collect(Collectors.toList());
     }
 }
