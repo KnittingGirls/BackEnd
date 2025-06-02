@@ -124,11 +124,16 @@ async def predict(file: UploadFile = File(...)):
     os.rename(actual_schp_path, schp_path)
 
     # PDF 생성 - fin_fin.py 호출
+    front_template = os.path.join(base_dir, "front_template.npz")
+    sleeve_template = os.path.join(base_dir, "sleeve_template.npz")
+
     finfin_cmd = [
         sys.executable,
         "fin_fin.py",
         "--deep", deeplab_path,
         "--schp", schp_path,
+        "--front", front_template,
+        "--sleeve", sleeve_template,
         "--output", pdf_path
     ]
 
