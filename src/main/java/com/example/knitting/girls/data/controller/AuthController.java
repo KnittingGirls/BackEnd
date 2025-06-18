@@ -52,7 +52,7 @@ public class AuthController {
             e.printStackTrace();
         }
 
-        String redirectUri = String.format("http://frontend33://login?token=%s&id=%d&nickname=%s",
+        String redirectUri = String.format("frontend33://login?token=%s&id=%d&nickname=%s",
                 token, userId, nickname);
 
         return "redirect:" + redirectUri;
