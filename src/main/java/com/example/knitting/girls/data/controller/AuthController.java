@@ -30,7 +30,7 @@ public class AuthController {
     public String login() {
         String kakaoLoginUrl = "https://kauth.kakao.com/oauth/authorize?response_type=code"
                 + "&client_id=23d1da761622fc79819d5e2b74ccf70a"
-                + "&redirect_uri=http://localhost:8080/auth/login/callback";
+                + "&redirect_uri=http://43.201.186.153:8080/auth/login/callback";
 
         return "redirect:" + kakaoLoginUrl;  // 카카오 로그인 페이지로 리디렉션
     }
@@ -52,7 +52,7 @@ public class AuthController {
             e.printStackTrace();
         }
 
-        String redirectUri = String.format("http://localhost:8081/SelectActivity?token=%s&id=%d&nickname=%s",
+        String redirectUri = String.format("http://frontend33://login?token=%s&id=%d&nickname=%s",
                 token, userId, nickname);
 
         return "redirect:" + redirectUri;
@@ -80,7 +80,7 @@ public class AuthController {
 
         String body = "grant_type=authorization_code"
                 + "&client_id=23d1da761622fc79819d5e2b74ccf70a"
-                + "&redirect_uri=http://localhost:8080/auth/login/callback"
+                + "&redirect_uri=http://43.201.186.153:8080/auth/login/callback"
                 + "&code=" + code;
 
         HttpEntity<String> entity = new HttpEntity<>(body, headers);

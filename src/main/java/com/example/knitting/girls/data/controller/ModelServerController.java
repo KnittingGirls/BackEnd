@@ -22,7 +22,7 @@ public class ModelServerController {
     public ResponseEntity<?> predict(@RequestParam("file") MultipartFile file) {
         try {
             // FastAPI 서버 주소
-            String fastapiUrl = "http://localhost:8000/predict";
+            String fastapiUrl = "http://43.201.186.153:8000/predict";
 
             // 이미지 파일을 Multipart로 보내기
             HttpHeaders headers = new HttpHeaders();
