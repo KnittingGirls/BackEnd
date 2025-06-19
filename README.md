@@ -58,10 +58,12 @@ Knitting Girls 프로젝트 중 **백엔드(모델 서버 API & CRUD API 및 서
 git clone https://github.com/KnittingGirls/BackEnd.git
 
 2) 환경 설정
-src/main/resources/application.properties 에
+src/main/resources/application.properties 복사 및
 - MySQL 접속 정보(JDBC URL, 사용자/비밀번호)
 - JWT 시크릿·토큰 만료 시간
 - CORS 허용 도메인 등 수정
+
+best_model.pth, pascal.pth, lip.pth, atr.pth는 ml_server 하위에 이동
 
 # 3) 로컬 실행 방법 (테스트용)
 **주의: EC2 서버(43.201.186.153)에 이미 배포되어 있으므로, 로컬 실행 없이 API 호출만으로 충분합니다.**
