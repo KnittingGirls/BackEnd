@@ -2,6 +2,8 @@
 
 Knitting Girls 프로젝트 중 **백엔드(모델 서버 API & CRUD API 및 서버)** 모듈의 사용법과 구조를 정리한 README입니다.  
 
+> **Backend 서버**: `http://43.201.186.153:8080`  
+> **ML 서버**: `http://43.201.186.153:8000`
 ---
 
 ## 목차
@@ -9,10 +11,11 @@ Knitting Girls 프로젝트 중 **백엔드(모델 서버 API & CRUD API 및 서
 1. [리포지토리 개요](#리포지토리-개요)  
 2. [주요 기능](#주요-기능)  
 3. [요구사항](#요구사항)  
-4. [설치 및 빌드](#설치-및-빌드)   
-5. [Java 클래스 설명](#java-클래스-설명)  
-6. [API 사용 예시](#api-사용-예시-postman--curl)  
-7. [DB 스키마 및 덤프](#db-스키마-및-덤프)
+4. [설치 및 빌드](#설치-및-빌드)
+5. [ML server 코드 개요](#ml-server-코드-개요) 
+6. [BE Java 클래스 개요](#be-java-클래스-개요)  
+7. [API 사용 예시](#api-사용-예시-postman--curl)  
+8. [DB 스키마 및 덤프](#db-스키마-및-덤프)
    
 ---
 
@@ -58,10 +61,12 @@ Knitting Girls 프로젝트 중 **백엔드(모델 서버 API & CRUD API 및 서
 git clone https://github.com/KnittingGirls/BackEnd.git
 
 2) 환경 설정
-src/main/resources/application.properties 에
+src/main/resources/application.properties 복사 및
 - MySQL 접속 정보(JDBC URL, 사용자/비밀번호)
 - JWT 시크릿·토큰 만료 시간
 - CORS 허용 도메인 등 수정
+
+best_model.pth, pascal.pth, lip.pth, atr.pth는 ml_server 하위에 이동
 
 # 3) 로컬 실행 방법 (테스트용)
 **주의: EC2 서버(43.201.186.153)에 이미 배포되어 있으므로, 로컬 실행 없이 API 호출만으로 충분합니다.**
@@ -77,8 +82,40 @@ uvicorn final_model_server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ---
+## ML server 코드 개요
+ml_server/ 디렉터리에 포함된 주요 스크립트 및 서버 코드
 
-## Java 클래스 설명
+### final_model_server.py
+- FastAPI 기반 엔드포인트(/predict, /pdfs/{filename})
+- DeepLabV3+ 모델 예측 → 마스크 생성
+- SCHP(extractor) 호출 → 파트별 아웃라인
+- fin_fin.py 실행 → PDF 도안 생성
+- 처리 시간 로깅 반환
+
+### model_server.py
+- 구버전 FastAPI 서버
+- patch_single_pdf.py를 이용해 segmentation 결과를 텍스트 그리드 형태 PDF로 변환
+
+### simple_extractor.py
+- SCHP(Self-Correction Human Parsing) 모델 호출 CLI
+- --dataset, --model-restore 등 옵션으로 다양한 데이터셋 지원
+- 입력 폴더 내 모든 이미지에 대해 파트별 마스크(.png) 생성
+
+### fin_fin.py
+- DeepLab 결과 이미지 + SCHP 결과 이미지 → dominant symbol 추출
+- 심볼 패턴(symbol_patterns)으로 변환 → matplotlib 그리드에 렌더링
+- 결과 front & sleeve 페이지를 하나의 PDF로 저장
+
+### patch_single_pdf.py
+- RGB 라벨 이미지를 3×3 문자 기호 패턴(symbol_patterns)으로 변환
+- matplotlib → PDF 출력 (model_server.py와 연동 사용)
+
+### make_grid.py
+- 딥랩 & SCHP 결과 이미지를 세로로 합쳐 단순 PDF 저장
+- 간단한 비교용 초기 테스트 스크립트
+
+---
+## BE Java 클래스 개요
 
 ### configuration  
 - **MultipartConfig**  
@@ -130,7 +167,7 @@ uvicorn final_model_server:app --host 0.0.0.0 --port 8000 --reload
 
 ## API 사용 예시 (Postman / cURL)
 
-> **Backend**: `http://43.201.186.153:8080`  
+> **Backend 서버**: `http://43.201.186.153:8080`  
 > **ML 서버**: `http://43.201.186.153:8000`
 
 | Method | Path                                          | 설명                            | 예시 호출                                                                                                                                                                                                                                                                                                                                                       |
