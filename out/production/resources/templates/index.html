@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+    <style>
+        #uploaded-image {
+            margin-top: 20px;
+            max-width: 500px; /* 이미지 최대 너비 설정 */
+            display: none; /* 처음에는 이미지 숨김 */
+        }
+    </style>
+</head>
+<body>
+<h1>Image Upload</h1>
+<form id="upload-form" enctype="multipart/form-data">
+    <input type="file" id="image-input" name="image" accept="image/*" required>
+    <button type="submit">Upload Image</button>
+</form>
+<img id="uploaded-image" src="" alt="Uploaded Image">
+
+<script>
+    document.getElementById('upload-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData();
+        const fileInput = document.getElementById('image-input');
+        formData.append('image', fileInput.files[0]);
+
+        fetch('http://localhost:8080/api/images/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to upload image');
+            }
+            return response.text();
+        })
+        .then(responseText => {
+            console.log(responseText);
+
+            return fetch('http://localhost:8080/api/images/random');
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load random image');
+            }
+            return response.blob();
+        })
+        .then(imageBlob => {
+            const imageUrl = URL.createObjectURL(imageBlob);
+            const uploadedImage = document.getElementById('uploaded-image');
+            uploadedImage.src = imageUrl;
+            uploadedImage.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+</body>
+</html>
