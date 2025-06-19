@@ -1,13 +1,12 @@
-# 🛠️ Knitting Girls Backend 서버
+# 🛠️ Knitting Girls Backend
 
-본 문서는 Knitting Girls 프로젝트 중 **백엔드(API & 인증·게시판 기능 담당)** 모듈의 사용법과 구조를 정리한 README입니다.  
-(ML 서버는 별도의 [README](../ml_server/README.md)를 참고하세요.)
+Knitting Girls 프로젝트 중 **백엔드(모델 서버 API & CRUD API 및 서버)** 모듈의 사용법과 구조를 정리한 README입니다.  
 
 ---
 
 ## 목차
 
-1. [프로젝트 개요](#프로젝트-개요)  
+1. [리포지토리 개요](#리포지토리-개요)  
 2. [주요 기능](#주요-기능)  
 3. [요구사항](#요구사항)  
 4. [설치 및 빌드](#설치-및-빌드)  
@@ -19,9 +18,9 @@
 
 ---
 
-## 프로젝트 개요
+## 리포지토리 개요
 
-- **목표**: 1인 가구 대상 AI 패턴 분석 결과(ML 서버)와 연동해  
+- **기능**
   - 이미지 업로드 → 저장 → URL 반환  
   - 게시글·댓글·북마크 CRUD  
   - 카카오 OAuth2 기반 로그인 → JWT 토큰 발급  
@@ -36,22 +35,21 @@
 ## 주요 기능
 
 1. **인증(Authentication & Authorization)**  
-2. **게시판(Post) 관리**  
+2. **게시글(Post) 관리**  
 3. **댓글(Comment) 관리**  
-4. **이미지 업로드(Image)**  
-5. **북마크(Bookmark) & 좋아요(Like) 토글**  
-6. **해시태그 검색 & 작성자별 게시글 조회**  
-7. **모델 서버 연동 → PDF 도안 생성**
+4. **북마크(Bookmark) & 좋아요(Like) 토글**  
+5. **해시태그 검색 & 작성자별 게시글 조회**  
+6. **모델 서버 연동 → PDF 도안 생성**
 
 ---
 
 ## 요구사항
 
-- **Java** ≥ 11  
+- **Java** ≥ 17
 - **Spring Boot** 2.5.x 이상  
 - **Maven** 또는 **Gradle**  
-- **MySQL** 5.7 이상 (이미 서버에 배포되어 있으므로 별도 실행 불필요)  
-- **Redis** (선택) – 세션·캐시 용
+- **MySQL** 8.0 이상 (이미 서버에 배포되어 있으므로 별도 실행 불필요)
+- **Python** 3.8 이상 (이미 서버에 배포되어 있으므로 별도 실행 불필요)
 
 ---
 
@@ -59,20 +57,17 @@
 
 ```bash
 # 1) 리포지토리 클론
-git clone https://github.com/your-org/knitting-girls-backend.git
-cd knitting-girls-backend
+git clone https://github.com/KnittingGirls/BackEnd.git
 
 # 2) 환경 설정
-#    src/main/resources/application.yml 에
+#    src/main/resources/application.properties 에
 #    - MySQL 접속 정보(JDBC URL, 사용자/비밀번호)
 #    - JWT 시크릿·토큰 만료 시간
 #    - CORS 허용 도메인 등 수정
 
-# 3) 빌드
-# Maven
-mvn clean package -DskipTests
+# 3) 백엔드 빌드
 
-# 또는 Gradle
+# Gradle
 ./gradlew clean build -x test
 ```
 
