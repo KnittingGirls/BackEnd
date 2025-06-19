@@ -2,6 +2,8 @@
 
 Knitting Girls 프로젝트 중 **백엔드(모델 서버 API & CRUD API 및 서버)** 모듈의 사용법과 구조를 정리한 README입니다.  
 
+> **Backend 서버**: `http://43.201.186.153:8080`  
+> **ML 서버**: `http://43.201.186.153:8000`
 ---
 
 ## 목차
@@ -132,7 +134,7 @@ uvicorn final_model_server:app --host 0.0.0.0 --port 8000 --reload
 
 ## API 사용 예시 (Postman / cURL)
 
-> **Backend**: `http://43.201.186.153:8080`  
+> **Backend 서버**: `http://43.201.186.153:8080`  
 > **ML 서버**: `http://43.201.186.153:8000`
 
 | Method | Path                                          | 설명                            | 예시 호출                                                                                                                                                                                                                                                                                                                                                       |
